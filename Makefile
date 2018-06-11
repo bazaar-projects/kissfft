@@ -7,9 +7,13 @@ else
 endif
 
 all:
-	gcc -Wall -fPIC -c *.c -Dkiss_fft_scalar=float -o kiss_fft.o
+	$(CC) -Wall -fPIC -c *.c -Dkiss_fft_scalar=float -o kiss_fft.o
+ifdef AR
+	$(AR) crus libkissfft.a kiss_fft.o
+else
 	ar crus libkissfft.a kiss_fft.o
-	gcc -shared $(SHARED) kiss_fft.o
+endif
+	$(CC) -shared $(SHARED) kiss_fft.o
 
 install: all
 	cp libkissfft.so /usr/local/lib/
@@ -42,6 +46,6 @@ asm: kiss_fft.s
 
 kiss_fft.s: kiss_fft.c kiss_fft.h _kiss_fft_guts.h
 	[ -e kiss_fft.s ] && mv kiss_fft.s kiss_fft.s~ || true
-	gcc -S kiss_fft.c -O3 -mtune=native -ffast-math -fomit-frame-pointer -unroll-loops -dA -fverbose-asm 
-	gcc -o kiss_fft_short.s -S kiss_fft.c -O3 -mtune=native -ffast-math -fomit-frame-pointer -dA -fverbose-asm -DFIXED_POINT
+	$(CC) -S kiss_fft.c -O3 -mtune=native -ffast-math -fomit-frame-pointer -unroll-loops -dA -fverbose-asm
+	$(CC) -o kiss_fft_short.s -S kiss_fft.c -O3 -mtune=native -ffast-math -fomit-frame-pointer -dA -fverbose-asm -DFIXED_POINT
 	[ -e kiss_fft.s~ ] && diff kiss_fft.s~ kiss_fft.s || true
