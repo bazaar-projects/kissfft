@@ -11,7 +11,7 @@
 #include <complex>
 #include <utility>
 #include <vector>
-
+#include <memory.h>
 
 template <typename scalar_t>
 class kissfft
@@ -326,7 +326,12 @@ class kissfft
                 ) const
         {
             const cpx_t * twiddles = &_twiddles[0];
-            cpx_t scratchbuf[p];
+            cpx_t *scratchbuf;
+            cpx_t scratchbuf_s[32];
+            if (p > 32) scratchbuf = (cpx_t *)malloc(p*sizeof(cpx_t));
+			else scratchbuf = scratchbuf_s;
+
+
 
             for ( std::size_t u=0; u<m; ++u ) {
                 std::size_t k = u;
@@ -348,6 +353,8 @@ class kissfft
                     k += m;
                 }
             }
+            
+            if (p > 32) free(scratchbuf);
         }
 
         std::size_t _nfft;
